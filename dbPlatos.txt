@@ -1,0 +1,6 @@
+1,lomo saltado,21.20
+2,ceviche,20.00
+3,caldo de gallina,15.00
+4,aji de gallina,15.00
+5,escabeche de pollo,18.50
+6,pachamanca,25.80
