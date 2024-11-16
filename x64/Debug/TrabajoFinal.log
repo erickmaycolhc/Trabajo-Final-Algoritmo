@@ -1,11 +1,11 @@
 ﻿  TrabajoFinal.cpp
-D:\c++\TrabajoFinal\TrabajoFinal\Pedido.h(101,11): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
+D:\c++\TrabajoFinal\TrabajoFinal\Pedido.h(119,11): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
   (compilando archivo de origen "TrabajoFinal.cpp")
   
-D:\c++\TrabajoFinal\TrabajoFinal\Menu.h(85,36): warning C4267: 'argumento': conversión de 'size_t' a 'int'; posible pérdida de datos
+D:\c++\TrabajoFinal\TrabajoFinal\Menu.h(114,36): warning C4267: 'argumento': conversión de 'size_t' a 'int'; posible pérdida de datos
   (compilando archivo de origen "TrabajoFinal.cpp")
   
-D:\c++\TrabajoFinal\TrabajoFinal\Menu.h(112,18): warning C4244: '+=': conversión de 'double' a 'float'; posible pérdida de datos
+D:\c++\TrabajoFinal\TrabajoFinal\Menu.h(155,18): warning C4244: '+=': conversión de 'double' a 'float'; posible pérdida de datos
   (compilando archivo de origen "TrabajoFinal.cpp")
   
   TrabajoFinal.vcxproj -> D:\c++\TrabajoFinal\x64\Debug\TrabajoFinal.exe

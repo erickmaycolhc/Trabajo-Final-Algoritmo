@@ -11,10 +11,14 @@ class ListaProducto {
 		ListaProducto(): ini(nullptr), lon(0){};
 		uint longitud();
 		bool esVacia();
-		void agregarInicial(int id, string nombre, double precio, string categoria);
+		void agregarPlatoInicial(int id, string nombre, double precio, string categoria);
+		void agregarBebidaInicial(int id, string nombre, double precio, string categoria);
 		void eliminarProducto(int id);
-		Producto* obtenerProducto(int id);
-		void mostrarProducto();
+		Producto* obtenerProductoComidas(int id);
+		Producto* obtenerProductoBebidas(int id);
+		void mostrarProductoPlatos();
+		void mostrarProductoBebidas();
+		void mostrarProductosPorCategoria(const string& categoria);
 };
 
 uint ListaProducto::longitud() {
@@ -25,7 +29,7 @@ bool ListaProducto::esVacia() {
 	return lon == 0;
 }
 
-void ListaProducto::agregarInicial(int id, string nombre, double precio, string categoria) {
+void ListaProducto::agregarPlatoInicial(int id, string nombre, double precio, string categoria) {
 	//lambda 1 
 	auto agregarPlatoLambda = [this](int id, string nombre, double precio, string categoria) {
 		Producto* nuevo = new Producto(id, nombre, precio, categoria, ini);
@@ -37,32 +41,95 @@ void ListaProducto::agregarInicial(int id, string nombre, double precio, string 
 	return agregarPlatoLambda(id, nombre, precio, categoria);
 };
 
-Producto* ListaProducto::obtenerProducto(int id) {
+void ListaProducto::agregarBebidaInicial(int id, string nombre, double precio, string categoria) {
+	//lambda 1 
+	auto agregarBebidaLambda = [this](int id, string nombre, double precio, string categoria) {
+		Producto* nuevo = new Producto(id, nombre, precio, categoria, ini);
+		if (nuevo != nullptr) {
+			ini = nuevo;
+			lon++;
+		}
+		};
+	return agregarBebidaLambda(id, nombre, precio, categoria);
+};
+
+void ListaProducto::mostrarProductosPorCategoria(const string& categoria) {
+	Producto* actual = ini;
+	while (actual != nullptr) {
+		if (actual->categoria == categoria) {
+			cout << "ID: " << actual->id
+				<< ", Nombre: " << actual->nombre
+				<< ", Precio: " << actual->precio << endl;
+		}
+		actual = actual->sig;
+	}
+}
+/////////////////////////////////
+
+Producto* ListaProducto::obtenerProductoComidas(int id) {
 	//lambda 2
-	auto obtenerProductoLamda = [this](int id) {
+	auto obtenerProductoLamda = [this](int id)-> Producto* {
 		Producto* aux = ini;
-		while (aux != nullptr && aux->id != id) {
+		while (aux != nullptr) {
+			if (aux->id == id && aux->categoria == "Comida") {
+				return aux;
+			}
 			aux = aux->sig;
 		}
-		return aux;
+		return nullptr;
 	};
 	
 	return obtenerProductoLamda(id);
 };
 
+Producto* ListaProducto::obtenerProductoBebidas(int id) {
+	//lambda 2
+	auto obtenerProductoLamda = [this](int id) -> Producto* {  // Especificamos el tipo de retorno Producto*
+		Producto* aux = ini;
+		while (aux != nullptr) {
+			if (aux->id == id && aux->categoria == "Bebida") {
+				return aux;
+			}
+			aux = aux->sig;
+		}
+		return nullptr;  // Si no se encuentra el producto, retornamos nullptr explícitamente
+	};
 
-void ListaProducto::mostrarProducto() {
+
+	return obtenerProductoLamda(id);
+};
+
+
+void ListaProducto::mostrarProductoPlatos() {
 	//lambda 3
-	auto mostrarProductoLambda = [this]() {
+	auto mostrarProductoPlatoLambda = [this]() {
 		Producto* actual = ini;
 		while (actual != nullptr) {
-			actual->mostrarProducto();
+
+			if (actual->categoria == "Comida") { //filtramos
+
+			actual->mostrarProductoPlatos();
+			}
 			actual = actual->sig;
 		}
 	};
 
-	return mostrarProductoLambda();
+	return mostrarProductoPlatoLambda();
 };
+
+void ListaProducto::mostrarProductoBebidas() {
+	//lambda 3
+	auto mostrarProductoBebidaLambda = [this]() {
+		Producto* actual = ini;
+		while (actual != nullptr) {
+			actual->mostrarProductoBebidas();
+			actual = actual->sig;
+		}
+		};
+
+	return mostrarProductoBebidaLambda();
+};
+
 
 void ListaProducto::eliminarProducto(int id) {
 	Producto* actual = ini;

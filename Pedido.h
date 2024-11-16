@@ -15,7 +15,7 @@ class Pedido {
 		Pedido(int id, string cliente, ListaProducto* productosPedidos = nullptr, string fecha = "", double precioTotal = 0, Pedido* sig = nullptr) : id(id), cliente(cliente), productosPedidos(productosPedidos), fecha(fecha), precioTotal(precioTotal), sig(sig){};
 
 		void mostrarPedido();
-		void agregarProductos(int id, ListaProducto* productosLista);
+		void agregarProductos(int id, ListaProducto* productosLista, const string& categoriaEsperada);
 		void ordenarPedidos(vector<Pedido>& pedido);
 };
 
@@ -24,21 +24,39 @@ void Pedido::mostrarPedido() {
 	cout << "ID: " << id << endl;
 	cout << "Cliente: " << cliente << endl;
 	if (productosPedidos != nullptr) {
-		productosPedidos->mostrarProducto();
-
+		productosPedidos->mostrarProductoPlatos();
+        productosPedidos->mostrarProductoBebidas();
 	}
 	cout << "Fecha: " << fecha << endl;
 	cout << "Precio total: " << precioTotal << endl;
 }
 
-void Pedido::agregarProductos(int id, ListaProducto* productosLista) {
-	Producto* nuevo = productosLista->obtenerProducto(id);
+void Pedido::agregarProductos(int id, ListaProducto* productosLista, const string& categoria) {
+    Producto* nuevo = nullptr;
+    if (categoria == "Comida") {
+        nuevo = productosLista->obtenerProductoComidas(id);
+    }
+    else if (categoria == "Bebida") {
+        nuevo = productosLista->obtenerProductoBebidas(id);
+    }
+
 	if (nuevo != nullptr) {
-		productosPedidos->agregarInicial(nuevo->id, nuevo->nombre, nuevo->precio, nuevo->categoria);
+        cout << "Producto encontrado: " << nuevo->nombre << " (Precio: " << nuevo->precio << ")" << endl;
+
+        if (nuevo->categoria == "Comida") {
+            productosPedidos->agregarPlatoInicial(nuevo->id, nuevo->nombre, nuevo->precio, nuevo->categoria);
+        }
+        else if (nuevo->categoria == "Bebida") {
+            productosPedidos->agregarBebidaInicial(nuevo->id, nuevo->nombre, nuevo->precio, nuevo->categoria);
+        }
 
 		//sumamos el precio del nuevo producto al precio total del pedido
 		precioTotal += nuevo->precio;
+        cout << "Total acumulado: " << precioTotal << endl;
 	}
+    else {
+        cout << "Producto con ID " << id << " no encontrado o no pertenece a la categoría esperada." << endl;
+    }
 }
 
 

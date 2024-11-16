@@ -1,4 +1,4 @@
-#pragma once
+#pragma once		
 #include "LectorDB.h"
 #include "ListaProducto.h"
 #include <vector>
@@ -6,6 +6,7 @@
 #include "Platos.h"
 #include "Pedido.h"
 #include "Producto.h"
+#include "Bebidas.h"
 
 
 class Menu {
@@ -33,6 +34,7 @@ void Menu::mostrarMenu() {  // Definición completa de la función
 
 	vector<Cliente> clientes = lector.leerClientes("dbClientes.txt");
 	vector<Platos<string>> platos = lector.leerPlatos("dbPlatos.txt");
+	vector<Bebidas<string>> bebidas = lector.leerBebidas("dbBebidas.txt");
 
 	//leer por data set
 	/*vector<Cliente> clientes = {
@@ -53,12 +55,21 @@ void Menu::mostrarMenu() {  // Definición completa de la función
 
 	// Lambda para agregar plato a la lista de productos
 	auto agregarPlatoLista = [&listaProducto](Platos<string>& plato) {
-		listaProducto.agregarInicial(plato.getId(), plato.getNombre(), plato.getPrecio(), "Comida");
-		};
+		listaProducto.agregarPlatoInicial(plato.getId(), plato.getNombre(), plato.getPrecio(), "Comida");
+	};
 
 	// Agregar todos los platos a la lista
 	for (Platos<string> plato : platos) {
 		agregarPlatoLista(plato);
+	}
+
+	// Lambda para agregar Bebidas a la lista de productos
+	auto agregarBebidaLista = [&listaProducto](Bebidas<string>& bebida) {
+		listaProducto.agregarBebidaInicial(bebida.getId(), bebida.getNombre(), bebida.getPrecio(), "Bebida");
+	};
+
+	for (Bebidas<string> bebida : bebidas) {
+		agregarBebidaLista(bebida);
 	}
 
 	int opcion;
@@ -97,22 +108,37 @@ void Menu::registrarPedido(LectorDB& lector, ListaProducto& listaProducto, vecto
 	string nombreCliente;
 	cout << "Ingrese el nombre del cliente: ";
 	cin.ignore();
-
 	getline(cin, nombreCliente);
+	
+	// crear nuevo pedido
 	Pedido nuevoPedido(pedidos.size() + 1, nombreCliente, new ListaProducto());
 
-	char continuar;
-	do {
-		int idPlato;
-		listaProducto.mostrarProducto();
-		cout << "Seleccionar Plato (ID): ";
-		cin >> idPlato;
+	// lambda para seleccionar producto
+	auto seleccionarProductos = [&](const string& categoria) {
+		char continuar;
+		do {
+			cout << "\n" << categoria << " disponibles:" << endl;
+			listaProducto.mostrarProductosPorCategoria(categoria);
 
-		nuevoPedido.agregarProductos(idPlato, &listaProducto);
+			int idProducto;
+			cout << "Seleccionar " << categoria << " (ID): ";
+			cin >> idProducto;
 
-		cout << "Desea agregar otro plato? (s/n): ";
-		cin >> continuar;
-	} while (continuar == 's' || continuar == 'S');
+
+			nuevoPedido.agregarProductos(idProducto, &listaProducto, categoria);
+
+			cout << "Desea agregar otro " << categoria << "? (s/n): ";
+			cin >> continuar;
+		} while (continuar == 's' || continuar == 'S');
+		};
+
+	// Selección de platos
+	cout << "\n--- Selección de Platos ---" << endl;
+	seleccionarProductos("Comida");
+
+	// Selección de bebidas
+	cout << "\n--- Selección de Bebidas ---" << endl;
+	seleccionarProductos("Bebida");
 
 	cout << "Fecha del pedido (dd/mm/aaaa): ";
 	string fecha;
@@ -154,7 +180,7 @@ void Menu::gestionarPlatos(ListaProducto& listaProducto) {
 
 	switch (opcion) {
 	case 1:
-		listaProducto.mostrarProducto();
+		listaProducto.mostrarProductoPlatos();
 		break;
 	case 2:
 		modificarPrecio(listaProducto);
@@ -182,7 +208,7 @@ void Menu::modificarPrecio(ListaProducto& listaProducto) {
 
 	//lambda 2 
 	  auto modificarPrecioLambda = [&listaProducto](int id, float nuevoPrecio) {
-        Producto* producto = listaProducto.obtenerProducto(id);
+        Producto* producto = listaProducto.obtenerProductoComidas(id);
 
 			if (producto != nullptr) {
 				producto->precio = nuevoPrecio;
@@ -212,7 +238,7 @@ void Menu::agregarPlato(ListaProducto& listaProducto) {
 	cout << "Categoria: ";
 	cin >> categoria;
 
-	listaProducto.agregarInicial(id, nombre, precio, categoria);
+	listaProducto.agregarPlatoInicial(id, nombre, precio, categoria);
 	cout << "Plato agregado correctamente." << endl;
 };
 
@@ -224,7 +250,7 @@ void Menu::eliminarPlato(ListaProducto& listaProducto) {
 
 	// Lambda 3
 	auto eliminarPlatoLambda = [&listaProducto](int id) {
-		Producto* producto = listaProducto.obtenerProducto(id);
+		Producto* producto = listaProducto.obtenerProductoComidas(id);
 			if (producto != nullptr) {
 				listaProducto.eliminarProducto(id);
 				cout << "Plato eliminado correctamente." << endl;
@@ -241,7 +267,7 @@ void Menu::eliminarPlato(ListaProducto& listaProducto) {
 void Menu::generarInformes(vector<Pedido>& pedidos, LectorDB& lector) {
 	cout << "\nGenerar Informes" << endl;
 	cout << "1. Historial de Pedidos" << endl;
-	cout << "2. Platos M�s Demandados" << endl;
+	cout << "2. Platos mas Demandados" << endl;
 	cout << "3. Historial de Clientes" << endl;
 
 	int opcion;
